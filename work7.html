@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tower of Hanoi Game</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .tower {
+        width: 10px;
+        height: 200px;
+        background-color: black;
+        position: relative;
+    }
+
+    .disk {
+        width: 100px;
+        height: 20px;
+        background-color: blue;
+        position: absolute;
+        bottom: 0;
+        transition: all 1s ease;
+    }
+</style>
+</head>
+<body>
+<div>
+    <label for="diskNumber">Select number of disks:</label>
+    <select id="diskNumber">
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+    <button id="startBtn">Start</button>
+    <button id="pauseBtn">Pause</button>
+    <button id="resumeBtn">Resume</button>
+    <label for="speed">Move Speed:</label>
+    <select id="speed">
+        <option value="1">Slow</option>
+        <option value="2">Medium</option>
+        <option value="3">Fast</option>
+    </select>
+</div>
+
+<div>
+    <div class="tower" id="tower1"></div>
+    <div class="tower" id="tower2"></div>
+    <div class="tower" id="tower3"></div>
+</div>
+
+<script>
+    const towers = document.querySelectorAll('.tower');
+    let diskCount = 3;
+    let isPaused = false;
+    let speed = 1;
+
+    function moveDisk(sourceTower, destTower) {
+        const disk = sourceTower.lastElementChild;
+        destTower.appendChild(disk);
+        setTimeout(() => {
+            disk.style.bottom = '180px';
+            setTimeout(() => {
+                disk.style.bottom = '20px';
+            }, 500);
+        }, 500);
+    }
+
+    function towerOfHanoi(n, source, auxiliary, destination) {
+        if (n === 1) {
+            moveDisk(source, destination);
+            return;
+        }
+
+        towerOfHanoi(n - 1, source, destination, auxiliary);
+        moveDisk(source, destination);
+        towerOfHanoi(n - 1, auxiliary, source, destination);
+    }
+
+    function startGame() {
+        const tower1 = document.getElementById('tower1');
+        tower1.innerHTML = '';
+        for (let i = diskCount; i > 0; i--) {
+            const disk = document.createElement('div');
+            disk.className = 'disk';
+            disk.style.width = `${20 + i * 20}px`;
+            tower1.appendChild(disk);
+        }
+
+        towerOfHanoi(diskCount, tower1, towers[1], towers[2]);
+    }
+
+    document.getElementById('diskNumber').addEventListener('change', function() {
+        diskCount = parseInt(this.value);
+    });
+
+    document.getElementById('startBtn').addEventListener('click', startGame);
+
+    document.getElementById('pauseBtn').addEventListener('click', function() {
+        isPaused = true;
+    });
+
+    document.getElementById('resumeBtn').addEventListener('click', function() {
+        isPaused = false;
+        towerOfHanoi(diskCount, towers[0], towers[1], towers[2]);
+    });
+
+    document.getElementById('speed').addEventListener('change', function() {
+        speed = parseInt(this.value);
+    });
+</script>
+</body>
+</html>
